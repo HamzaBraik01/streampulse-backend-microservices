@@ -30,7 +30,7 @@ public class Video {
     private Integer releaseYear;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "\"type\"", nullable = false)
     private VideoType type;
 
     @Enumerated(EnumType.STRING)
@@ -41,6 +41,6 @@ public class Video {
 
     private String director;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "\"cast\"", columnDefinition = "TEXT")
     private String cast;
 }
