@@ -1,3 +1,5 @@
+package com.streampulse.videoservice.dto;
+
 import com.streampulse.videoservice.entity.VideoCategory;
 import com.streampulse.videoservice.entity.VideoType;
 import io.swagger.v3.oas.annotations.media.Schema;

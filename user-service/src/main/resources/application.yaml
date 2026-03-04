@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/user-db
     username: postgres
-    password: ${password}
+    password: ycode
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -27,6 +27,6 @@ server:
 
 eureka:
   client:
-    enabled: false
+    enabled: true
   instance:
     prefer-ip-address: true

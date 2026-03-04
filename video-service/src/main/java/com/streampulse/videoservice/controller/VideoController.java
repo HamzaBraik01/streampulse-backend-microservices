@@ -1,3 +1,7 @@
+package com.streampulse.videoservice.controller;
+
+import com.streampulse.videoservice.dto.VideoDTO;
+import com.streampulse.videoservice.entity.VideoCategory;
 import com.streampulse.videoservice.entity.VideoType;
 import com.streampulse.videoservice.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
