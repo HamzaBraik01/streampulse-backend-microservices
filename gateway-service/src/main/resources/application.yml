@@ -15,6 +15,10 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/api/users/**
+        - id: security-service
+          uri: lb://security-service
+          predicates:
+            - Path=/api/auth/**
 
 eureka:
   client:
