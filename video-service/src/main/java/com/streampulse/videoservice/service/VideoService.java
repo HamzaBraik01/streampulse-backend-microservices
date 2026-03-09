@@ -6,6 +6,9 @@ import com.streampulse.videoservice.entity.VideoType;
 
 import java.util.List;
 
+/**
+ * Service interface for Video business logic.
+ */
 public interface VideoService {
 
     List<VideoDTO> findAll();
@@ -19,4 +22,10 @@ public interface VideoService {
     void delete(Long id);
 
     List<VideoDTO> search(VideoType type, VideoCategory category);
+
+    List<VideoDTO> searchByTitle(String title);
+
+    List<VideoDTO> findByType(VideoType type);
+
+    List<VideoDTO> findByCategory(VideoCategory category);
 }

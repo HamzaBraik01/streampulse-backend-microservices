@@ -1,0 +1,173 @@
+
+services:
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DATABASES
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  video-db:
+    image: postgres:15-alpine
+    container_name: video-db
+    environment:
+      POSTGRES_DB: video_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ADMIN
+    ports:
+      - "5432:5432"
+    volumes:
+      - video-db-data:/var/lib/postgresql/data
+    networks:
+      - streampulse-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-db:
+    image: postgres:15-alpine
+    container_name: user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ADMIN
+    ports:
+      - "5433:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks:
+      - streampulse-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # INFRASTRUCTURE SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  config-service:
+    build: ./config-service
+    container_name: config-service
+    ports:
+      - "8888:8888"
+    networks:
+      - streampulse-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  discovery-service:
+    build: ./discovery-service
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-service:
+        condition: service_healthy
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    networks:
+      - streampulse-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    ports:
+      - "8090:8080"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_CLIENT_ENABLED=true
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - JWT_SECRET=bXlTdXBlclNlY3JldEtleUZvclN0cmVhbVB1bHNlSldUQXV0aGVudGljYXRpb24yMDI2
+    networks:
+      - streampulse-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # BUSINESS SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  video-service:
+    build: ./video-service
+    container_name: video-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      video-db:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://video-db:5432/video_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=ADMIN
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_CLIENT_ENABLED=true
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - TMDB_API_KEY=${TMDB_API_KEY:-bd8b65a82c1a545e203f10e84c24ab58}
+    networks:
+      - streampulse-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      user-db:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      video-service:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=ADMIN
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_CLIENT_ENABLED=true
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - FEIGN_CLIENT_VIDEO-SERVICE_URL=http://video-service:8081
+      - JWT_SECRET=bXlTdXBlclNlY3JldEtleUZvclN0cmVhbVB1bHNlSldUQXV0aGVudGljYXRpb24yMDI2
+      - JWT_EXPIRATION=86400000
+    networks:
+      - streampulse-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8082/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+# ═══════════════════════════════════════════════════════════════════════════
+# VOLUMES & NETWORKS
+# ═══════════════════════════════════════════════════════════════════════════
+
+volumes:
+  video-db-data:
+  user-db-data:
+
+networks:
+  streampulse-network:
+    driver: bridge

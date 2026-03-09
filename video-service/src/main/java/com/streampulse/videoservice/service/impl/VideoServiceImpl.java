@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of VideoService — encapsulates all video business logic.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -86,6 +89,36 @@ public class VideoServiceImpl implements VideoService {
             videos = videoRepository.findAll();
         }
         return videos.stream()
+                .map(videoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VideoDTO> searchByTitle(String title) {
+        log.info("Searching videos by title: {}", title);
+        return videoRepository.findByTitleContainingIgnoreCase(title)
+                .stream()
+                .map(videoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VideoDTO> findByType(VideoType type) {
+        log.info("Fetching videos by type: {}", type);
+        return videoRepository.findByType(type)
+                .stream()
+                .map(videoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VideoDTO> findByCategory(VideoCategory category) {
+        log.info("Fetching videos by category: {}", category);
+        return videoRepository.findByCategory(category)
+                .stream()
                 .map(videoMapper::toDTO)
                 .collect(Collectors.toList());
     }

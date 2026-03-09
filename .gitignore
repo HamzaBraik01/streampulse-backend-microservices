@@ -71,14 +71,18 @@ local.properties
 .help
 HELP.md
 
-# Application properties (sensible defaults)
-config-service/src/main/resources/application.properties
+# Sensitive config
 config-service/src/main/resources/ssh-key
 **/application-dev.yml
 **/application-local.yml
 **/application-secret.yml
 **/secrets.yml
 
-# Postman
-*.postman_collection.json
-*.postman_environment.json
+# Scripts
+generate_commits.sh
+generate_commits.ps1
+
+brief1s6-69a4b355b795b823998944.pdf
+Product_Requirements_Document.md
+StreamPulse_API.postman_collection.json
+Tech_Stack.md

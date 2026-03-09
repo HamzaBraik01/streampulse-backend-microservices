@@ -7,8 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Repository for Video entity — abstracts data access from business logic.
+ */
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Long> {
 
@@ -17,4 +19,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     List<Video> findByCategory(VideoCategory category);
 
     List<Video> findByTypeAndCategory(VideoType type, VideoCategory category);
+
+    List<Video> findByTitleContainingIgnoreCase(String title);
 }

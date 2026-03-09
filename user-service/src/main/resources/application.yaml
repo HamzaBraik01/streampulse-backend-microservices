@@ -4,13 +4,13 @@ spring:
   config:
     import: optional:configserver:http://localhost:8888
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/user-db
+    url: jdbc:postgresql://127.0.0.1:5432/user_db
     username: postgres
-    password: ycode
+    password: ADMIN
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -23,10 +23,66 @@ spring:
       enabled: false
 
 server:
-  port: 8081
+  port: 8082
 
 eureka:
   client:
     enabled: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,refresh
+
+# Feign client configuration
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+      video-service:
+        connectTimeout: 3000
+        readTimeout: 3000
+    video-service:
+      url: http://localhost:8081
+  circuitbreaker:
+    enabled: true
+
+# Resilience4j Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    instances:
+      video-service:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+  timelimiter:
+    instances:
+      video-service:
+        timeoutDuration: 3s
+
+# SpringDoc OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Logging
+logging:
+  level:
+    com.streaming.video: DEBUG
+    org.springframework.web: INFO
+
+# JWT Configuration
+jwt:
+  secret: bXlTdXBlclNlY3JldEtleUZvclN0cmVhbVB1bHNlSldUQXV0aGVudGljYXRpb24yMDI2
+  expiration: 86400000
+
