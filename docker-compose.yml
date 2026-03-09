@@ -90,7 +90,7 @@ services:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_CLIENT_ENABLED=true
-      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_CLOUD_CONFIG_ENABLED=true
       - JWT_SECRET=bXlTdXBlclNlY3JldEtleUZvclN0cmVhbVB1bHNlSldUQXV0aGVudGljYXRpb24yMDI2
     networks:
       - streampulse-network
@@ -120,7 +120,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=ADMIN
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_CLIENT_ENABLED=true
-      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_CLOUD_CONFIG_ENABLED=true
       - TMDB_API_KEY=${TMDB_API_KEY:-bd8b65a82c1a545e203f10e84c24ab58}
     networks:
       - streampulse-network
@@ -148,7 +148,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=ADMIN
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_CLIENT_ENABLED=true
-      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_CLOUD_CONFIG_ENABLED=true
       - FEIGN_CLIENT_VIDEO-SERVICE_URL=http://video-service:8081
       - JWT_SECRET=bXlTdXBlclNlY3JldEtleUZvclN0cmVhbVB1bHNlSldUQXV0aGVudGljYXRpb24yMDI2
       - JWT_EXPIRATION=86400000

@@ -58,6 +58,11 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+# JWT Configuration
+jwt:
+  secret: bXlTdXBlclNlY3JldEtleUZvclN0cmVhbVB1bHNlSldUQXV0aGVudGljYXRpb24yMDI2
+  expiration: 86400000
+
 logging:
   level:
     com.streaming.video: DEBUG
