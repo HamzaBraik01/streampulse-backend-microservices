@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: video-service
+          uri: lb://video-service
+          predicates:
+            - Path=/api/videos/**
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+        - id: video-service-swagger
+          uri: lb://video-service
+          predicates:
+            - Path=/video-service/v3/api-docs/**
+        - id: user-service-swagger
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/v3/api-docs/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

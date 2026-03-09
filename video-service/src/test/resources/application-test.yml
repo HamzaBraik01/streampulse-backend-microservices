@@ -12,6 +12,12 @@ spring:
   cloud:
     config:
       enabled: false
+
 eureka:
   client:
     enabled: false
+
+tmdb:
+  api:
+    base-url: https://api.themoviedb.org/3
+    key:
