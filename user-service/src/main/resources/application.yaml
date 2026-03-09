@@ -4,7 +4,7 @@ spring:
   config:
     import: optional:configserver:http://localhost:8888
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/user_db
+    url: jdbc:postgresql://127.0.0.1:5433/user_db
     username: postgres
     password: ADMIN
     driver-class-name: org.postgresql.Driver
